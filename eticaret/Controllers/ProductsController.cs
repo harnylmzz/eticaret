@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using eticaret.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eticaret.Controllers
 {
@@ -8,16 +10,34 @@ namespace eticaret.Controllers
     public class ProductsController : ControllerBase
     {
 
-        [HttpGet]
-        public IActionResult GetProducts()
+        private readonly DataContext _context;
+
+        public ProductsController(DataContext context)
         {
-            return Ok();
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProducts()
+        {
+            var products = await _context.Products.ToListAsync();
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProducts(int id)
+        public async Task<IActionResult> GetProducts(int? id)
         {
-            return Ok();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var product = await _context.Products.FindAsync(id);
+            return Ok(product);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
         }
     }
 }
