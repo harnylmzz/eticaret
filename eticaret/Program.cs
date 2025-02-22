@@ -25,7 +25,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1/v1.json", "Demo API");
+        options.SwaggerEndpoint("/openapi/v1.json", "Demo API");
     });
 }
 
