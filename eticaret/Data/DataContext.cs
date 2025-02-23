@@ -5,12 +5,10 @@ namespace eticaret.Data
 {
     public class DataContext : DbContext
     {
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public DataContext(DbContextOptions options): base(options)
-        {
-            
-        }
-        public DbSet<Product> Products => Set<Product>();
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

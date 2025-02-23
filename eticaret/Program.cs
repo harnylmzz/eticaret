@@ -1,8 +1,18 @@
-using Microsoft.AspNetCore.Builder;
+using eticaret.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS Politikasý Ekle
+// PostgreSQL baðlantý dizesini al
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// DbContext'i servise ekle (PostgreSQL için UseNpgsql kullan)
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseNpgsql(connectionString));
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowSpecificOrigins",
@@ -14,24 +24,15 @@ builder.Services.AddCors(options =>
                       });
 });
 
-// Controllerlarý ve Swagger'ý ekle
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); // Bu satýr hata veriyordu, paket yükleyerek çözdük.
-
 var app = builder.Build();
 
-// Swagger Middleware Ekle
-if (app.Environment.IsDevelopment()) // Sadece geliþtirme ortamýnda çalýþsýn
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseCors("MyAllowSpecificOrigins");
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
