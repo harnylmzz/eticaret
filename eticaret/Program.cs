@@ -1,35 +1,34 @@
-using eticaret.Data;
-using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<DataContext>(options =>
+// CORS Politikasý Ekle
+builder.Services.AddCors(options =>
 {
-    var config = builder.Configuration;
-    var connectionString = config.GetConnectionString("DefaultConnection");
-
-    options.UseNpgsql(connectionString);
+    options.AddPolicy("MyAllowSpecificOrigins",
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000") // Frontend URL
+                                .AllowAnyMethod()
+                                .AllowAnyHeader();
+                      });
 });
+
+// Controllerlarý ve Swagger'ý ekle
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(); // Bu satýr hata veriyordu, paket yükleyerek çözdük.
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Swagger Middleware Ekle
+if (app.Environment.IsDevelopment()) // Sadece geliþtirme ortamýnda çalýþsýn
 {
-    app.MapOpenApi();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Demo API");
-    });
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("MyAllowSpecificOrigins");
 
 app.UseAuthorization();
 

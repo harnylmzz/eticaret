@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eticaret.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
